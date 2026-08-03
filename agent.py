@@ -137,6 +137,16 @@ def create_newsletter():
 
     excel_files = glob.glob(os.path.join(data_dir, '*.xlsx'))
     
+    def sort_key(f):
+        base = os.path.basename(f).lower()
+        if 'sebi' in base:
+            return 0
+        elif 'listed' in base:
+            return 1
+        return 2
+        
+    excel_files.sort(key=sort_key)
+    
     sources = []
     for f in excel_files:
         base = os.path.basename(f)
@@ -203,11 +213,25 @@ def create_newsletter():
         for shape in slide.shapes:
             if shape.has_text_frame:
                 text = shape.text
+                
+                if i == 0 and "INSIGHTS" in text:
+                    shape.text = f"{target_month}\n{target_year}-INSIGHTS"
+                    for paragraph in shape.text_frame.paragraphs:
+                        paragraph.alignment = PP_ALIGN.CENTER
+                        for run in paragraph.runs:
+                            run.font.name = 'Calibri'
+                            run.font.size = Pt(44)
+                            run.font.bold = True
+                            run.font.color.rgb = RGBColor(0, 112, 192)
+                    continue
+
                 if "____" in text:
                     text = re.sub(r'_{4,}', target_month, text)
                 if "from SEBI issued" in text:
                     text = text.replace("from SEBI issued", f"from {sources_str} issued")
-                shape.text = text
+                
+                if text != shape.text:
+                    shape.text = text
 
     index_slide_idx = 1
     current_index_slide = prs.slides[index_slide_idx]
@@ -335,9 +359,16 @@ def create_newsletter():
                 current_y = start_top
         return True
 
+    is_first_sheet = True
     for sheet_name, df_sheet in dfs.items():
         if df_sheet.empty:
             continue
+
+        if not is_first_sheet:
+            # Force advance to new slide for subsequent sub domains
+            current_y = max_height
+            
+        is_first_sheet = False
 
         if not ensure_slide_space(0.8):
             break
