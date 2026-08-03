@@ -133,7 +133,7 @@ def add_regulation_table(slide, table_rows: list, left_in: float, top_in: float,
 def create_newsletter():
     data_dir      = '/Users/apple/Desktop/Akshayam/Newsletter_Agent/data/'
     template_path = '/Users/apple/Desktop/Akshayam/Newsletter_Agent/Template/Pravartiya - Template (1).pptx'
-    output_path   = '/Users/apple/Desktop/Akshayam/Newsletter_Agent/output.pptx'
+    output_path   = '/Users/apple/Desktop/Akshayam/Newsletter_Agent/output/output.pptx'
 
     excel_files = glob.glob(os.path.join(data_dir, '*.xlsx'))
     
