@@ -256,12 +256,19 @@ def create_newsletter():
     tf.word_wrap = True
     
     first_para = True
-    for file_name, sheets_dict in file_grouped_dfs.items():
-        has_data = any(not df_sheet.empty for df_sheet in sheets_dict.values())
-        if not has_data:
+    for sheet_name, df_sheet in dfs.items():
+        if df_sheet.empty:
             continue
             
-        if current_y + 0.4 > 9.8:
+        # Calculate dynamic space needed based on character length of titles
+        estimated_needed = 0.35 # Header
+        for _, row in df_sheet.iterrows():
+            title = str(row['Title']).strip().replace('**', '') if 'Title' in row and pd.notna(row['Title']) else ""
+            if title:
+                lines = max(1, len(title) // 80 + 1)
+                estimated_needed += (lines * 0.2) + 0.1
+        
+        if current_y + estimated_needed > 9.8:
             if index_slide_idx == 1:
                 index_slide_idx = 2
                 current_index_slide = prs.slides[index_slide_idx]
@@ -271,60 +278,36 @@ def create_newsletter():
                 tf.word_wrap = True
                 first_para = True
                 
-        # Domain header intentionally removed as requested
+        if first_para:
+            p = tf.paragraphs[0]
+            first_para = False
+        else:
+            p = tf.add_paragraph()
+            
+        p.text = f"\n{sheet_name.upper()}:"
+        p.font.bold = True
+        p.font.underline = True
+        p.font.size = Pt(16)
+        p.font.color.rgb = RGBColor(0, 32, 96)
+        current_y += 0.35
         
-        for sheet_name, df_sheet in sheets_dict.items():
-            if df_sheet.empty:
-                continue
-                
-            # Calculate dynamic space needed based on character length of titles
-            estimated_needed = 0.35 # Header
-            for _, row in df_sheet.iterrows():
-                title = str(row['Title']).strip().replace('**', '') if 'Title' in row and pd.notna(row['Title']) else ""
-                if title:
-                    lines = max(1, len(title) // 80 + 1)
-                    estimated_needed += (lines * 0.2) + 0.1
-            
-            if current_y + estimated_needed > 9.8:
-                if index_slide_idx == 1:
-                    index_slide_idx = 2
-                    current_index_slide = prs.slides[index_slide_idx]
-                    current_y = 2.0
-                    txBox = current_index_slide.shapes.add_textbox(Inches(0.5), Inches(current_y), Inches(7.2), Inches(8.0))
-                    tf = txBox.text_frame
-                    tf.word_wrap = True
-                    first_para = True
-                    
-            if first_para:
-                p = tf.paragraphs[0]
-                first_para = False
-            else:
-                p = tf.add_paragraph()
-                
-            p.text = f"\n{sheet_name.upper()}:"
-            p.font.bold = True
-            p.font.underline = True
-            p.font.size = Pt(16)
-            p.font.color.rgb = RGBColor(0, 32, 96)
-            current_y += 0.35
-            
-            for _, row in df_sheet.iterrows():
-                title = str(row['Title']).strip().replace('**', '') if 'Title' in row and pd.notna(row['Title']) else ""
-                if title:
-                    bullet_p = tf.add_paragraph()
-                    bullet_p.text = f"➢ {title}"
-                    bullet_p.font.size = Pt(12)
-                    bullet_p.space_after = Pt(6)
-                    try:
-                        bullet_p.font.color.rgb = RGBColor(0, 51, 153)
-                    except Exception:
-                        pass
-                    for r in bullet_p.runs:
-                        r.font.name = 'Calibri'
-                        r.font.color.rgb = RGBColor(0, 51, 153)
-                    # Accurate increment per title accounting for wrapping
-                    lines = max(1, len(title) // 80 + 1)
-                    current_y += (lines * 0.2) + 0.1
+        for _, row in df_sheet.iterrows():
+            title = str(row['Title']).strip().replace('**', '') if 'Title' in row and pd.notna(row['Title']) else ""
+            if title:
+                bullet_p = tf.add_paragraph()
+                bullet_p.text = f"➢ {title}"
+                bullet_p.font.size = Pt(12)
+                bullet_p.space_after = Pt(6)
+                try:
+                    bullet_p.font.color.rgb = RGBColor(0, 51, 153)
+                except Exception:
+                    pass
+                for r in bullet_p.runs:
+                    r.font.name = 'Calibri'
+                    r.font.color.rgb = RGBColor(0, 51, 153)
+                # Accurate increment per title accounting for wrapping
+                lines = max(1, len(title) // 80 + 1)
+                current_y += (lines * 0.2) + 0.1
 
 
 
