@@ -6,11 +6,17 @@ This repository contains the automated generation script for the **Pravartiya Ne
 
 The main script (`agent.py`) reads data from Excel files (`.xlsx`) provided in the `data/` directory, extracts the necessary regulations, circulars, and updates, and formats them into a PowerPoint presentation (`.pptx`) based on the provided template.
 
+### Features
+- **Dynamic Title**: The "INSIGHTS" text on the first slide dynamically updates based on the Month and Year extracted from the Excel files.
+- **Styling**: All generated body text and bullet points are explicitly formatted with the **Calibri** font and a dark **Blue** color (`RGB(0, 51, 153)`) to match the template.
+- **Layout Management**: Each sub-domain (defined by individual Excel sheets) automatically forces the presentation to start on a new slide.
+- **Data Prioritization**: The script is programmed to always process Excel files associated with "SEBI" first, followed by "Listed Companies."
+
 ## Folder Structure
 
 - `agent.py`: The core script that performs data extraction and PowerPoint generation.
 - `Template/`: Contains the PowerPoint template file used for generation (`Pravartiya - Template (1).pptx`).
-- `data/`: Place your input Excel files here. The script expects the files to contain `Summary`, `Month`, `Year`, and other metadata. **Note**: SEBI-related Excel files are processed first.
+- `data/`: Place your input Excel files here. The script expects the files to contain `Summary`, `Month`, `Year`, and other metadata.
 - `output/`: The generated presentation (`output.pptx`) is saved here after successfully running the script.
 - `documents/`: For any reference documents or PDFs.
 - `scripts/`: Assorted debugging, inspection (`inspect_*.py`), and evaluation scripts.

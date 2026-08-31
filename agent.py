@@ -95,7 +95,7 @@ def add_regulation_table(slide, table_rows: list, left_in: float, top_in: float,
     HEADER_BG = RGBColor(0, 51, 153)    # dark blue
     ALT_BG    = RGBColor(235, 241, 255) # light blue stripe
     WHITE     = RGBColor(255, 255, 255)
-    DARK_TEXT = RGBColor(30, 30, 30)
+    DARK_TEXT = RGBColor(0, 51, 153)
 
     headers = ["Regulation Number", "Amendment"]
     for col_idx, header_text in enumerate(headers):
@@ -120,6 +120,8 @@ def add_regulation_table(slide, table_rows: list, left_in: float, top_in: float,
             para.font.size = Pt(9)
             para.font.color.rgb = DARK_TEXT
             para.word_wrap = True
+            for r in para.runs:
+                r.font.name = 'Calibri'
             if col_idx == 0:
                 para.alignment = PP_ALIGN.CENTER
                 para.font.bold = True
@@ -218,11 +220,15 @@ def create_newsletter():
                     shape.text = f"{target_month}\n{target_year}-INSIGHTS"
                     for paragraph in shape.text_frame.paragraphs:
                         paragraph.alignment = PP_ALIGN.CENTER
+                        try:
+                            paragraph.font.color.rgb = RGBColor(0, 51, 153)
+                        except Exception:
+                            pass
                         for run in paragraph.runs:
                             run.font.name = 'Calibri'
                             run.font.size = Pt(44)
                             run.font.bold = True
-                            run.font.color.rgb = RGBColor(0, 112, 192)
+                            run.font.color.rgb = RGBColor(0, 51, 153)
                     continue
 
                 if "____" in text:
@@ -232,6 +238,14 @@ def create_newsletter():
                 
                 if text != shape.text:
                     shape.text = text
+                    for p in shape.text_frame.paragraphs:
+                        try:
+                            p.font.color.rgb = RGBColor(0, 51, 153)
+                        except Exception:
+                            pass
+                        for r in p.runs:
+                            r.font.name = 'Calibri'
+                            r.font.color.rgb = RGBColor(0, 51, 153)
 
     index_slide_idx = 1
     current_index_slide = prs.slides[index_slide_idx]
@@ -301,6 +315,13 @@ def create_newsletter():
                     bullet_p.text = f"➢ {title}"
                     bullet_p.font.size = Pt(12)
                     bullet_p.space_after = Pt(6)
+                    try:
+                        bullet_p.font.color.rgb = RGBColor(0, 51, 153)
+                    except Exception:
+                        pass
+                    for r in bullet_p.runs:
+                        r.font.name = 'Calibri'
+                        r.font.color.rgb = RGBColor(0, 51, 153)
                     # Accurate increment per title accounting for wrapping
                     lines = max(1, len(title) // 80 + 1)
                     current_y += (lines * 0.2) + 0.1
@@ -413,12 +434,13 @@ def create_newsletter():
                 run.text = title
                 run.font.bold  = True
                 run.font.size  = Pt(12)
+                run.font.name = 'Calibri'
                 if pdf_url and pdf_url != 'nan':
                     run.hyperlink.address    = pdf_url
                     run.font.color.rgb       = RGBColor(0, 102, 204)
                     run.font.underline       = True
                 else:
-                    run.font.color.rgb = RGBColor(0, 0, 0)
+                    run.font.color.rgb = RGBColor(0, 51, 153)
                 p.space_after = Pt(6)
                 txBox.height  = Inches(0.30)
                 current_y    += 0.30 + 0.15
@@ -542,16 +564,24 @@ def create_newsletter():
                             run_title.text      = text
                             run_title.font.bold = True
                             run_title.font.size = Pt(12)
+                            run_title.font.name = 'Calibri'
                             p.space_after = Pt(6)
                             if url and url != 'nan':
                                 run_title.hyperlink.address    = url
                                 run_title.font.color.rgb       = RGBColor(0, 102, 204)
                                 run_title.font.underline       = True
                             else:
-                                run_title.font.color.rgb = RGBColor(0, 0, 0)
+                                run_title.font.color.rgb = RGBColor(0, 51, 153)
                         else:
                             p.text      = text
                             p.font.size = Pt(11)
+                            try:
+                                p.font.color.rgb = RGBColor(0, 51, 153)
+                            except Exception:
+                                pass
+                            for r in p.runs:
+                                r.font.name = 'Calibri'
+                                r.font.color.rgb = RGBColor(0, 51, 153)
                             if is_sub:
                                 p.font.bold    = True
                                 p.space_before = Pt(12)
