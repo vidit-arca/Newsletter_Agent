@@ -133,9 +133,11 @@ def add_regulation_table(slide, table_rows: list, left_in: float, top_in: float,
 # Main newsletter builder
 # ─────────────────────────────────────────────────────────────────────────────
 def create_newsletter():
-    data_dir      = '/Users/apple/Desktop/Akshayam/Newsletter_Agent/data/'
-    template_path = '/Users/apple/Desktop/Akshayam/Newsletter_Agent/Template/Pravartiya - Template (1).pptx'
-    output_path   = '/Users/apple/Desktop/Akshayam/Newsletter_Agent/output/output.pptx'
+
+    base_dir      = os.path.dirname(os.path.abspath(__file__))
+    data_dir      = os.path.join(base_dir, 'data')
+    template_path = os.path.join(base_dir, 'Template', 'Pravartiya - Template (1).pptx')
+    output_path   = os.path.join(base_dir, 'output', 'output.pptx')
 
     excel_files = glob.glob(os.path.join(data_dir, '*.xlsx'))
     
@@ -312,6 +314,16 @@ def create_newsletter():
 
 
     content_slides = [prs.slides[i] for i in range(4, 10)]
+
+    # Remove standalone period placeholders from the content-slide template.
+    # These are separate text-box shapes containing only "." and are unrelated
+    # to the actual arrow/dash bullets or sub-heading text.
+    for _slide in content_slides:
+        for _shape in list(_slide.shapes):
+            if _shape.has_text_frame and _shape.text.strip() == '.':
+                sp = _shape._element
+                sp.getparent().remove(sp)
+
     slide_index    = 0
     current_slide  = content_slides[slide_index]
 
